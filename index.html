@@ -24,6 +24,10 @@
         button {
             margin-right: 10px;
         }
+        #counter {
+            margin-top: 10px;
+            font-size: 1.2em;
+        }
     </style>
 </head>
 <body>
@@ -32,6 +36,7 @@
     <button onclick="resetGame()">Reiniciar Jogo</button>
     <button onclick="resetLearning()">Zerar Aprendizado</button>
     <button onclick="trainAgent()">Treinar Agente</button>
+    <div id="counter">Partidas jogadas: 0</div>
     <script src="qlearning.js"></script>
 </body>
 </html>
