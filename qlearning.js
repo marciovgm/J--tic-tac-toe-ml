@@ -81,9 +81,6 @@ class QLearningTicTacToe {
 
     reset() {
         this.board.fill(null);
-        if (this.isTraining) {
-            this.gamesPlayed++;
-        }
         this.renderBoard();
     }
 
@@ -107,9 +104,12 @@ class QLearningTicTacToe {
                 }
             }
 
+            this.gamesPlayed++;
+
+            // Atualiza o contador de partidas jogadas no DOM
             if (i % 1000 === 0 || i === iterations - 1) {
                 document.getElementById('counter').innerText = `Partidas jogadas: ${this.gamesPlayed}`;
-                await new Promise(resolve => setTimeout(resolve, 0));
+                await new Promise(resolve => setTimeout(resolve, 0)); // Permite que o DOM seja atualizado
             }
         }
 
