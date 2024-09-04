@@ -92,7 +92,8 @@ class QLearningTicTacToe {
         progressBar.innerText = `0 (0%)`;
     }
 
-    async trainAgent(iterations = 10) {
+    //async 
+    trainAgent(iterations = 10) {
         this.isTraining = true;
         this.gamesPlayed = 0;
         alert('Iniciando treinamento...');
