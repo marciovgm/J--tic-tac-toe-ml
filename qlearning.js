@@ -98,7 +98,7 @@ class QLearningTicTacToe {
         
         alert('Iniciando treinamento...');
         alert(iterations);
-        for (let i = 0; i < iterations; i++) {
+        while (i < iterations; i++) {
             this.reset();
             while (this.getAvailableMoves().length > 0 && !this.checkWin(this.player) && !this.checkWin(this.opponent)) {
                 this.makeMove(this.chooseMove());
