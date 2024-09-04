@@ -7,8 +7,6 @@ class QLearningTicTacToe {
         this.board = Array(9).fill(null);
         this.player = 'X';
         this.opponent = 'O';
-        this.isTraining = false;  // Para rastrear o modo de treinamento
-        this.gamesPlayed = 0;     // Contador de partidas jogadas
     }
 
     getBoardState() {
@@ -44,14 +42,11 @@ class QLearningTicTacToe {
         if (this.board[index] === null) {
             this.board[index] = this.player;
             this.lastMove = index;
-            this.renderBoard();
             if (this.checkWin(this.player)) {
                 this.updateQTable(1);
-                if (!this.isTraining) alert('Agente ganhou!');
                 this.reset();
             } else if (this.getAvailableMoves().length === 0) {
                 this.updateQTable(0.5);
-                if (!this.isTraining) alert('Empate!');
                 this.reset();
             } else {
                 this.opponentMove();
@@ -60,12 +55,10 @@ class QLearningTicTacToe {
     }
 
     opponentMove() {
-        const opponentMove = this.chooseMove();
+        const opponentMove = this.getAvailableMoves()[Math.floor(Math.random() * this.getAvailableMoves().length)];
         this.board[opponentMove] = this.opponent;
-        this.renderBoard();
         if (this.checkWin(this.opponent)) {
             this.updateQTable(-1);
-            if (!this.isTraining) alert('Oponente ganhou!');
             this.reset();
         }
     }
@@ -81,36 +74,25 @@ class QLearningTicTacToe {
 
     reset() {
         this.board.fill(null);
-        if (this.isTraining) {
-            this.gamesPlayed++;  // Incrementa o contador de partidas jogadas durante o treinamento
-            document.getElementById('counter').innerText = `Partidas jogadas: ${this.gamesPlayed}`;
-        }
+        this.renderBoard();
     }
 
     resetLearning() {
         this.qTable = {};
-        this.gamesPlayed = 0;  // Reseta o contador de partidas jogadas
-        document.getElementById('counter').innerText = `Partidas jogadas: 0`;
     }
 
     async trainAgent(iterations = 100000) {
-        this.isTraining = true;  // Ativa o modo de treinamento
-        this.gamesPlayed = 0;  // Reseta o contador no início do treinamento
-
         for (let i = 0; i < iterations; i++) {
-            this.reset();
+            this.board.fill(null);
             while (this.getAvailableMoves().length > 0 && !this.checkWin(this.player) && !this.checkWin(this.opponent)) {
                 this.makeMove(this.chooseMove());
                 if (!this.checkWin(this.player) && this.getAvailableMoves().length > 0) {
                     this.opponentMove();
                 }
             }
-            // Atualiza o contador de partidas jogadas no DOM após cada partida
-            document.getElementById('counter').innerText = `Partidas jogadas: ${this.gamesPlayed}`;
         }
-
-        this.isTraining = false;  // Desativa o modo de treinamento
         alert('Treinamento concluído!');
+        this.reset();
     }
 
     renderBoard() {
