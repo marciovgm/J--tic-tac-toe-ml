@@ -7,7 +7,8 @@ class QLearningTicTacToe {
         this.board = Array(9).fill(null);
         this.player = 'X';
         this.opponent = 'O';
-        this.isTraining = false; // Adicionado para rastrear o modo de treinamento
+        this.isTraining = false;  // Para rastrear o modo de treinamento
+        this.gamesPlayed = 0;     // Contador de partidas jogadas
     }
 
     getBoardState() {
@@ -46,7 +47,7 @@ class QLearningTicTacToe {
             this.renderBoard();
             if (this.checkWin(this.player)) {
                 this.updateQTable(1);
-                if (!this.isTraining) alert('Você ganhou!');
+                if (!this.isTraining) alert('Agente ganhou!');
                 this.reset();
             } else if (this.getAvailableMoves().length === 0) {
                 this.updateQTable(0.5);
@@ -80,15 +81,20 @@ class QLearningTicTacToe {
 
     reset() {
         this.board.fill(null);
+        if (this.isTraining) {
+            this.gamesPlayed++;  // Incrementa o contador de partidas jogadas durante o treinamento
+            document.getElementById('counter').innerText = `Partidas jogadas: ${this.gamesPlayed}`;
+        }
         this.renderBoard();
     }
 
     resetLearning() {
         this.qTable = {};
+        this.gamesPlayed = 0;  // Reseta o contador de partidas jogadas
+        document.getElementById('counter').innerText = `Partidas jogadas: 0`;
     }
 
-    sync trainAgent(iterations = 100000) {
-        alert('Clique em Ok para iniciar o Treinamento!');
+    async trainAgent(iterations = 100000) {
         this.isTraining = true;  // Ativa o modo de treinamento
         for (let i = 0; i < iterations; i++) {
             this.board.fill(null);
@@ -127,10 +133,6 @@ function resetGame() {
 function resetLearning() {
     game.resetLearning();
     alert('Aprendizado zerado!');
-}
-
-function trainAgent() {
-    game.trainAgent();
 }
 
 function trainAgent() {
