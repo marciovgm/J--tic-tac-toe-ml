@@ -90,7 +90,6 @@ class QLearningTicTacToe {
         const progressBar = document.getElementById('progress-bar');
         progressBar.style.width = '0%';
         progressBar.innerText = `0 (0%)`;
-         await new Promise(resolve => setTimeout(resolve, 0)); // Permite que o DOM seja atualizado
     }
 
     async trainAgent(iterations = 100000) {
@@ -108,7 +107,6 @@ class QLearningTicTacToe {
             }
 
             this.gamesPlayed++;
-             await new Promise(resolve => setTimeout(resolve, 0)); // Permite que o DOM seja atualizado
 
             // Atualiza a barra de progresso após cada partida
             if (i % 100 === 0 || i === iterations - 1) { // Atualiza a barra de progresso a cada 100 jogos
