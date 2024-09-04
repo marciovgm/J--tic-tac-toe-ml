@@ -41,7 +41,7 @@ class QLearningTicTacToe {
     }
 
     makeMove(index) {
-        if (this.board[index] === null) {
+        if (this.board[index] === null && !this.isTraining) {  // Evita movimentos durante o treinamento
             this.board[index] = this.player;
             this.lastMove = index;
             this.renderBoard();
@@ -81,11 +81,11 @@ class QLearningTicTacToe {
 
     reset() {
         this.board.fill(null);
+        this.renderBoard();
         if (this.isTraining) {
             this.gamesPlayed++;  // Incrementa o contador de partidas jogadas durante o treinamento
             document.getElementById('counter').innerText = `Partidas jogadas: ${this.gamesPlayed}`;
         }
-        this.renderBoard();
     }
 
     resetLearning() {
@@ -107,6 +107,7 @@ class QLearningTicTacToe {
                     this.opponentMove();
                 }
             }
+
             // Atualiza o contador de partidas jogadas no DOM após cada partida
             document.getElementById('counter').innerText = `Partidas jogadas: ${this.gamesPlayed}`;
 
