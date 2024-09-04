@@ -95,10 +95,11 @@ class QLearningTicTacToe {
     async trainAgent(iterations = 10) {
         this.isTraining = true;
         this.gamesPlayed = 0;
+        let i = 0;
         
         alert('Iniciando treinamento...');
         alert(iterations);
-        while (i < iterations; i++) {
+        while (i < iterations) {
             this.reset();
             while (this.getAvailableMoves().length > 0 && !this.checkWin(this.player) && !this.checkWin(this.opponent)) {
                 this.makeMove(this.chooseMove());
@@ -109,6 +110,7 @@ class QLearningTicTacToe {
             }
 
             this.gamesPlayed++;
+            i++;
             alert(gamesPlayed.toString());
 
             if (i % 100 === 0 || i === iterations - 1) {
