@@ -44,7 +44,6 @@ class QLearningTicTacToe {
         if (this.board[index] === null) {
             this.board[index] = this.player;
             this.lastMove = index;
-            this.renderBoard();
             if (this.checkWin(this.player)) {
                 this.updateQTable(1);
                 this.reset();
@@ -60,7 +59,6 @@ class QLearningTicTacToe {
     opponentMove() {
         const opponentMove = this.chooseMove();
         this.board[opponentMove] = this.opponent;
-        this.renderBoard();
         if (this.checkWin(this.opponent)) {
             this.updateQTable(-1);
             this.reset();
@@ -80,6 +78,7 @@ class QLearningTicTacToe {
         this.board.fill(null);
         if (this.isTraining) {
             this.gamesPlayed++;  // Incrementa o contador de partidas jogadas durante o treinamento
+            document.getElementById('counter').innerText = `Partidas jogadas: ${this.gamesPlayed}`;
         }
     }
 
@@ -101,14 +100,11 @@ class QLearningTicTacToe {
                     this.opponentMove();
                 }
             }
-            // Atualiza o contador de partidas jogadas no DOM a cada 1000 jogos
-            if (i % 1000 === 0) {
-                document.getElementById('counter').innerText = `Partidas jogadas: ${this.gamesPlayed}`;
-            }
+            // Atualiza o contador de partidas jogadas no DOM após cada partida
+            document.getElementById('counter').innerText = `Partidas jogadas: ${this.gamesPlayed}`;
         }
 
         this.isTraining = false;  // Desativa o modo de treinamento
-        document.getElementById('counter').innerText = `Partidas jogadas: ${this.gamesPlayed}`;
         alert('Treinamento concluído!');
     }
 
