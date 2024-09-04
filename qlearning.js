@@ -92,7 +92,7 @@ class QLearningTicTacToe {
         progressBar.innerText = `0 (0%)`;
     }
 
-    async trainAgent(iterations = 1000) {
+    async trainAgent(iterations = 10) {
         this.isTraining = true;
         this.gamesPlayed = 0;
         alert('Iniciando treinamento...');
@@ -104,6 +104,7 @@ class QLearningTicTacToe {
                 if (!this.checkWin(this.player) && this.getAvailableMoves().length > 0) {
                     this.opponentMove();
                 }
+                alert(i);
             }
 
             this.gamesPlayed++;
