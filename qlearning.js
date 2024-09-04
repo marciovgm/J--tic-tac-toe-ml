@@ -97,6 +97,7 @@ class QLearningTicTacToe {
     async trainAgent(iterations = 100000) {
         this.isTraining = true;  // Ativa o modo de treinamento
         this.gamesPlayed = 0;  // Reseta o contador no início do treinamento
+
         for (let i = 0; i < iterations; i++) {
             this.board.fill(null);
             while (this.getAvailableMoves().length > 0 && !this.checkWin(this.player) && !this.checkWin(this.opponent)) {
@@ -105,7 +106,13 @@ class QLearningTicTacToe {
                     this.opponentMove();
                 }
             }
+            // Atualiza o contador de partidas jogadas no DOM
+            document.getElementById('counter').innerText = `Partidas jogadas: ${this.gamesPlayed}`;
+            
+            // Força o navegador a atualizar o DOM para mostrar o progresso do contador
+            await new Promise(resolve => setTimeout(resolve, 0));
         }
+
         this.isTraining = false;  // Desativa o modo de treinamento
         alert('Treinamento concluído!');
         this.reset();
