@@ -98,16 +98,17 @@ class QLearningTicTacToe {
         alert('Iniciando treinamento...');
 
         for (let i = 0; i < iterations; i++) {
-            this.reset();
+            //this.reset();
             while (this.getAvailableMoves().length > 0 && !this.checkWin(this.player) && !this.checkWin(this.opponent)) {
                 this.makeMove(this.chooseMove());
                 if (!this.checkWin(this.player) && this.getAvailableMoves().length > 0) {
                     this.opponentMove();
                 }
-                alert(i);
+                
             }
 
             this.gamesPlayed++;
+            alert(gamesPlayed);
 
             if (i % 100 === 0 || i === iterations - 1) {
                 const progress = (this.gamesPlayed / iterations) * 100;
