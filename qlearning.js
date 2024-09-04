@@ -109,14 +109,12 @@ class QLearningTicTacToe {
             this.gamesPlayed++;
 
             // Atualiza a barra de progresso após cada partida
-            const progress = (this.gamesPlayed / iterations) * 100;
-            const progressBar = document.getElementById('progress-bar');
-            progressBar.style.width = `${progress}%`;
-            progressBar.innerText = `${this.gamesPlayed} (${progress.toFixed(2)}%)`;
-
-            // Permite que o DOM seja atualizado
-            if (i % 100 === 0) {
-                await new Promise(resolve => setTimeout(resolve, 0));
+            if (i % 100 === 0 || i === iterations - 1) { // Atualiza a barra de progresso a cada 100 jogos
+                const progress = (this.gamesPlayed / iterations) * 100;
+                const progressBar = document.getElementById('progress-bar');
+                progressBar.style.width = `${progress}%`;
+                progressBar.innerText = `${this.gamesPlayed} (${progress.toFixed(2)}%)`;
+                await new Promise(resolve => setTimeout(resolve, 0)); // Permite que o DOM seja atualizado
             }
         }
 
