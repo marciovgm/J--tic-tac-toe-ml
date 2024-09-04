@@ -87,7 +87,8 @@ class QLearningTicTacToe {
         this.qTable = {};
     }
 
-    async trainAgent(iterations = 10000) {
+    sync trainAgent(iterations = 100000) {
+        alert('Clique em Ok para iniciar o Treinamento!');
         this.isTraining = true;  // Ativa o modo de treinamento
         for (let i = 0; i < iterations; i++) {
             this.board.fill(null);
