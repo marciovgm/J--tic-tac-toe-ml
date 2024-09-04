@@ -99,7 +99,7 @@ class QLearningTicTacToe {
         alert(iterations);
         for (let i = 0; i < iterations; i++) {
             this.reset();
-            alert('teste');
+            alert(i);
             while (this.getAvailableMoves().length > 0 && !this.checkWin(this.player) && !this.checkWin(this.opponent)) {
                 this.makeMove(this.chooseMove());
                 if (!this.checkWin(this.player) && this.getAvailableMoves().length > 0) {
