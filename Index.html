@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Velha com Q-learning</title>
+    <style>
+        #board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            font-size: 2em;
+            text-align: center;
+            line-height: 100px;
+            border: 1px solid black;
+            cursor: pointer;
+        }
+        button {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Jogo da Velha com Q-learning</h1>
+    <div id="board"></div>
+    <button onclick="resetGame()">Reiniciar Jogo</button>
+    <button onclick="resetLearning()">Zerar Aprendizado</button>
+    <button onclick="trainAgent()">Treinar Agente</button>
+    <script src="qlearning.js"></script>
+</body>
+</html>
