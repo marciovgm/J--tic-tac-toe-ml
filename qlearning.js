@@ -42,11 +42,14 @@ class QLearningTicTacToe {
         if (this.board[index] === null) {
             this.board[index] = this.player;
             this.lastMove = index;
+            this.renderBoard();
             if (this.checkWin(this.player)) {
                 this.updateQTable(1);
+                alert('Agente ganhou!');
                 this.reset();
             } else if (this.getAvailableMoves().length === 0) {
                 this.updateQTable(0.5);
+                alert('Empate!');
                 this.reset();
             } else {
                 this.opponentMove();
@@ -55,10 +58,12 @@ class QLearningTicTacToe {
     }
 
     opponentMove() {
-        const opponentMove = this.getAvailableMoves()[Math.floor(Math.random() * this.getAvailableMoves().length)];
+        const opponentMove = this.chooseMove();
         this.board[opponentMove] = this.opponent;
+        this.renderBoard();
         if (this.checkWin(this.opponent)) {
             this.updateQTable(-1);
+            alert('Oponente ganhou!');
             this.reset();
         }
     }
