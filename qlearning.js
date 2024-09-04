@@ -41,7 +41,7 @@ class QLearningTicTacToe {
     }
 
     makeMove(index) {
-        if (this.board[index] === null && !this.isTraining) {  // Evita movimentos durante o treinamento
+        if (this.board[index] === null) {
             this.board[index] = this.player;
             this.lastMove = index;
             this.renderBoard();
@@ -126,7 +126,6 @@ class QLearningTicTacToe {
             const cellElement = document.createElement('div');
             cellElement.className = 'cell';
             cellElement.innerText = cell || '';
-            cellElement.addEventListener('click', () => this.makeMove(index));
             boardElement.appendChild(cellElement);
         });
     }
