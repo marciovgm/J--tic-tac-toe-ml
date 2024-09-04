@@ -47,11 +47,11 @@ class QLearningTicTacToe {
             this.renderBoard();
             if (this.checkWin(this.player)) {
                 this.updateQTable(1);
-                alert('Você ganhou!');
+                if (!this.isTraining) alert('Você ganhou!');
                 this.reset();
             } else if (this.getAvailableMoves().length === 0) {
                 this.updateQTable(0.5);
-                alert('Empate!');
+                if (!this.isTraining) alert('Empate!');
                 this.reset();
             } else {
                 this.opponentMove();
@@ -65,7 +65,7 @@ class QLearningTicTacToe {
         this.renderBoard();
         if (this.checkWin(this.opponent)) {
             this.updateQTable(-1);
-            alert('Oponente ganhou!');
+            if (!this.isTraining) alert('Oponente ganhou!');
             this.reset();
         }
     }
@@ -81,12 +81,10 @@ class QLearningTicTacToe {
 
     reset() {
         this.board.fill(null);
-        this.renderBoard();
         if (this.isTraining) {
             this.gamesPlayed++;
-        } else {
-            document.getElementById('counter').innerText = `Partidas jogadas: ${this.gamesPlayed}`;
         }
+        this.renderBoard();
     }
 
     resetLearning() {
