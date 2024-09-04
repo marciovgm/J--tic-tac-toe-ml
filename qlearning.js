@@ -47,11 +47,9 @@ class QLearningTicTacToe {
             this.renderBoard();
             if (this.checkWin(this.player)) {
                 this.updateQTable(1);
-                if (!this.isTraining) alert('Agente ganhou!');
                 this.reset();
             } else if (this.getAvailableMoves().length === 0) {
                 this.updateQTable(0.5);
-                if (!this.isTraining) alert('Empate!');
                 this.reset();
             } else {
                 this.opponentMove();
@@ -65,7 +63,6 @@ class QLearningTicTacToe {
         this.renderBoard();
         if (this.checkWin(this.opponent)) {
             this.updateQTable(-1);
-            if (!this.isTraining) alert('Oponente ganhou!');
             this.reset();
         }
     }
@@ -84,7 +81,6 @@ class QLearningTicTacToe {
         if (this.isTraining) {
             this.gamesPlayed++;  // Incrementa o contador de partidas jogadas durante o treinamento
         }
-        this.renderBoard();
     }
 
     resetLearning() {
@@ -98,7 +94,7 @@ class QLearningTicTacToe {
         this.gamesPlayed = 0;  // Reseta o contador no início do treinamento
 
         for (let i = 0; i < iterations; i++) {
-            this.board.fill(null);
+            this.reset();
             while (this.getAvailableMoves().length > 0 && !this.checkWin(this.player) && !this.checkWin(this.opponent)) {
                 this.makeMove(this.chooseMove());
                 if (!this.checkWin(this.player) && this.getAvailableMoves().length > 0) {
@@ -114,7 +110,6 @@ class QLearningTicTacToe {
         this.isTraining = false;  // Desativa o modo de treinamento
         document.getElementById('counter').innerText = `Partidas jogadas: ${this.gamesPlayed}`;
         alert('Treinamento concluído!');
-        this.reset();
     }
 
     renderBoard() {
