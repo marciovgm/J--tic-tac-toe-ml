@@ -25,9 +25,15 @@
             margin-right: 10px;
             margin-top: 10px;
         }
-        #counter {
-            margin-top: 10px;
-            font-size: 1.2em;
+        #progress-container {
+            width: 100%;
+            background-color: #ddd;
+            margin-top: 20px;
+        }
+        #progress-bar {
+            width: 0%;
+            height: 30px;
+            background-color: #4caf50;
         }
     </style>
 </head>
@@ -37,7 +43,9 @@
     <button onclick="resetGame()">Reiniciar Jogo</button>
     <button onclick="resetLearning()">Zerar Aprendizado</button>
     <button onclick="trainAgent()">Treinar Agente</button>
-    <div id="counter">Partidas jogadas: 0</div>
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+    </div>
     <script src="qlearning.js"></script>
 </body>
 </html>
