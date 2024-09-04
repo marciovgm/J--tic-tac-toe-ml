@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jogo da Velha com Q-learning</title>
+    <title>Jogo da Velha com Machine Learning</title>
     <style>
         #board {
             display: grid;
@@ -23,15 +23,21 @@
         }
         button {
             margin-right: 10px;
+            margin-top: 10px;
+        }
+        #counter {
+            margin-top: 10px;
+            font-size: 1.2em;
         }
     </style>
 </head>
 <body>
-    <h1>Jogo da Velha com Q-learning</h1>
+    <h1>Jogo da Velha com Machine Learning</h1>
     <div id="board"></div>
     <button onclick="resetGame()">Reiniciar Jogo</button>
     <button onclick="resetLearning()">Zerar Aprendizado</button>
     <button onclick="trainAgent()">Treinar Agente</button>
+    <div id="counter">Partidas jogadas: 0</div>
     <script src="qlearning.js"></script>
 </body>
 </html>
