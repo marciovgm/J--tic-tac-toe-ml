@@ -104,6 +104,7 @@ class QLearningTicTacToe {
                     this.opponentMove();
                 }
             }
+            this.gamesPlayed = this.gamesPlayed + 1;
         }
         this.isTraining = false;  // Desativa o modo de treinamento
         alert('Treinamento concluído!');
