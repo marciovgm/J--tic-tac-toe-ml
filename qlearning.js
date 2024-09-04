@@ -104,7 +104,8 @@ class QLearningTicTacToe {
                     this.opponentMove();
                 }
             }
-            this.gamesPlayed = this.gamesPlayed + 1;
+    this.gamesPlayed++;
+            document.getElementById('counter').innerText = `Partidas jogadas: ${this.gamesPlayed}`;
         }
         this.isTraining = false;  // Desativa o modo de treinamento
         alert('Treinamento concluído!');
