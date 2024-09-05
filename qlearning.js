@@ -114,7 +114,7 @@ class QLearningTicTacToe {
     async trainAgent(iterations = 10) {
         this.isTraining = true;
         this.gamesPlayed = 0;
-        alert('Iniciando treinamento...');
+        alert('Iniciando treinamento da máquina IA...');
         alert('aaaa');
         alert('z ' + this.getAvailableMoves().length.toString());
         for (let i = 0; i < iterations; i++) {
