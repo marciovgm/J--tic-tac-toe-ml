@@ -72,7 +72,7 @@ class QLearningTicTacToe {
             }
             return false; // O jogo continua
         }
-        return false; // Movimentação inválida
+        return true; // Jogada inválida, tratada como finalizada para impedir que o jogador jogue duas vezes
     }
 
     // Verifica se há um vencedor
