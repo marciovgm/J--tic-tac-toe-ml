@@ -115,6 +115,7 @@ class QLearningTicTacToe {
         this.isTraining = true;
         this.gamesPlayed = 0;
         alert('Iniciando treinamento...');
+        alert('aaaa');
         alert('z ' + this.getAvailableMoves().length.toString());
         for (let i = 0; i < iterations; i++) {
             this.reset();
