@@ -15,11 +15,38 @@ class QLearningTicTacToe {
         this.lastState = null; // Armazena o estado anterior
         this.lastMove = null; // Armazena a última jogada
         this.currentPlayer = this.player; // Define o jogador atual como 'X'
+        this.initializeQTables(); // Inicializa as tabelas Q com todas as combinações possíveis
+    }
+
+    // Inicializa a Tabela Q com todas as combinações possíveis do tabuleiro
+    initializeQTables() {
+        const possibleStates = this.generateAllBoardStates();
+        possibleStates.forEach(state => {
+            this.qTableA[state] = Array(9).fill(0);
+            this.qTableB[state] = Array(9).fill(0);
+        });
+    }
+
+    // Gera todas as combinações possíveis do tabuleiro
+    generateAllBoardStates() {
+        const states = [];
+        const generate = (current, depth) => {
+            if (depth === 9) {
+                states.push(current.join(''));
+                return;
+            }
+            ['X', 'O', null].forEach(val => {
+                current[depth] = val;
+                generate(current, depth + 1);
+            });
+        };
+        generate(Array(9).fill(null), 0);
+        return states;
     }
 
     // Retorna o estado atual do tabuleiro como uma string
     getBoardState() {
-        return this.board.join('');
+        return this.board.map(cell => cell || '').join('');
     }
 
     // Retorna uma lista de índices de células disponíveis
@@ -30,20 +57,9 @@ class QLearningTicTacToe {
         }, []);
     }
 
-    // Inicializa ou retorna a Tabela Q para um estado
-    initializeQState(state, table) {
-        if (!table[state]) {
-            table[state] = Array(9).fill(Math.random() * 0.01); // Inicializa com valores pequenos
-        }
-        return table[state];
-    }
-
     // Escolhe o próximo movimento com base em uma política epsilon-greedy
     chooseMove() {
         const state = this.getBoardState();
-        this.initializeQState(state, this.qTableA);
-        this.initializeQState(state, this.qTableB);
-
         if (Math.random() < this.explorationRate) {
             const availableMoves = this.getAvailableMoves();
             return availableMoves[Math.floor(Math.random() * availableMoves.length)];
@@ -59,9 +75,6 @@ class QLearningTicTacToe {
     updateQTable(reward) {
         if (this.lastState !== null && this.lastMove !== null) {
             const state = this.getBoardState();
-            this.initializeQState(state, this.qTableA);
-            this.initializeQState(state, this.qTableB);
-
             if (Math.random() < 0.5) {
                 const maxNextQ = Math.max(...this.qTableA[state]);
                 this.qTableA[this.lastState][this.lastMove] += this.learningRate * (reward + this.discountFactor * maxNextQ - this.qTableA[this.lastState][this.lastMove]);
@@ -123,6 +136,7 @@ class QLearningTicTacToe {
     resetLearning() {
         this.qTableA = {};
         this.qTableB = {};
+        this.initializeQTables(); // Reinicializa as tabelas Q
         this.gamesPlayed = 0;
         this.explorationRate = 1.0; // Reseta a exploração
         const progressBar = document.getElementById('progress-bar');
@@ -132,7 +146,7 @@ class QLearningTicTacToe {
     }
 
     // Treina a IA simulando várias partidas, sempre assumindo que o humano joga primeiro
-    async trainAgent(iterations = 10000) {
+    async trainAgent(iterations = 1000) {
         this.isTraining = true;
         this.gamesPlayed = 0;
         alert('Iniciando treinamento IA...');
