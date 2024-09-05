@@ -108,12 +108,13 @@ class QLearningTicTacToe {
         for (let i = 0; i < iterations; i++) {
             this.reset();
             while (this.getAvailableMoves().length > 0 && !this.checkWin(this.player) && !this.checkWin(this.opponent)) {
+                
                 const move = this.chooseMove();
                 this.makeMove(move);
 
                 // Renderiza o tabuleiro após cada jogada
                 this.renderBoard();
-
+                 alert('b ' + i.toString() + ' ' + this.getAvailableMoves().length.toString());
                 if (!this.checkWin(this.player) && this.getAvailableMoves().length > 0) {
                     this.opponentMove();
                     this.renderBoard(); // Renderiza o tabuleiro após a jogada do oponente
