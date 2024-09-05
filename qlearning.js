@@ -99,7 +99,7 @@ class QLearningTicTacToe {
     }
 
     // Treina a IA simulando várias partidas
-    async trainAgent(iterations = 10000) {
+    async trainAgent(iterations = 50000) {
         this.isTraining = true;
         this.gamesPlayed = 0;
         this.explorationRate = 0.1; // Alta taxa de exploração durante o treinamento
