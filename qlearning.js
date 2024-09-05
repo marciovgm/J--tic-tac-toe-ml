@@ -54,6 +54,20 @@ class QLearningTicTacToe {
             this.board[index] = player;
             this.lastMove = index;
             this.renderBoard();
+
+            // Verifica se o jogador atual venceu
+            if (this.checkWin(player)) {
+                if (!this.isTraining) alert(`${player} venceu!`);
+                this.reset();
+            } else if (this.getAvailableMoves().length === 0) {
+                // Verifica se deu empate
+                if (!this.isTraining) alert('Empate!');
+                this.reset();
+            } else if (player === this.player && !this.isTraining) {
+                // Se o jogador humano jogou, agora é a vez da IA jogar
+                const opponentMove = this.chooseMove();
+                this.makeMove(opponentMove, this.opponent);
+            }
         }
     }
 
@@ -83,7 +97,7 @@ class QLearningTicTacToe {
     }
 
     // Treina a IA simulando várias partidas
-    async trainAgent(iterations = 10) {
+    async trainAgent(iterations = 1000) {
         this.isTraining = true;
         this.gamesPlayed = 0;
         alert('Iniciando treinamento IA...');
@@ -117,12 +131,9 @@ class QLearningTicTacToe {
                     this.updateQTable(0.5);
                     break;  // Empate
                 }
-
-                //alert('b ' + i.toString() + ' ' + this.getAvailableMoves().length.toString());
             }
 
             this.gamesPlayed++;
-             
 
             // Atualiza a barra de progresso
             if (i % 100 === 0 || i === iterations - 1) {
