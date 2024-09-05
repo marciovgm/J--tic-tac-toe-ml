@@ -25,7 +25,6 @@ class QLearningTicTacToe {
     chooseMove() {
         if (Math.random() < this.explorationRate) {
             const availableMoves = this.getAvailableMoves();
-            alert('passei aqui');
             return availableMoves[Math.floor(Math.random() * availableMoves.length)];
         } else {
             const state = this.getBoardState();
@@ -107,29 +106,28 @@ class QLearningTicTacToe {
         alert('Iniciando treinamento IA...');
 
         for (let i = 0; i < iterations; i++) {
-            this.reset();
+            this.reset();  // Reinicia o tabuleiro a cada nova partida
             while (this.getAvailableMoves().length > 0 && !this.checkWin(this.player) && !this.checkWin(this.opponent)) {
-                
                 const move = this.chooseMove();
                 this.makeMove(move);
-
-                // Renderiza o tabuleiro após cada jogada
                 this.renderBoard();
                  alert('b ' + i.toString() + ' ' + this.getAvailableMoves().length.toString());
+
                 if (!this.checkWin(this.player) && this.getAvailableMoves().length > 0) {
                     this.opponentMove();
-                    this.renderBoard(); // Renderiza o tabuleiro após a jogada do oponente
+                    this.renderBoard();  // Certifica-se de que o tabuleiro seja atualizado após cada jogada
                 }
             }
 
             this.gamesPlayed++;
 
+            // Atualiza a barra de progresso
             if (i % 100 === 0 || i === iterations - 1) {
                 const progress = (this.gamesPlayed / iterations) * 100;
                 const progressBar = document.getElementById('progress-bar');
                 progressBar.style.width = `${progress}%`;
                 progressBar.innerText = `${this.gamesPlayed} (${progress.toFixed(2)}%)`;
-                await new Promise(resolve => setTimeout(resolve, 0)); // Permite que o DOM seja atualizado
+                await new Promise(resolve => setTimeout(resolve, 0));  // Permite que o DOM seja atualizado
             }
         }
 
