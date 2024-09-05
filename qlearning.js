@@ -100,36 +100,48 @@ class QLearningTicTacToe {
         progressBar.innerText = `0 (0%)`;
     }
 
-    async trainAgent(iterations = 10) {
-        this.isTraining = true;
-        this.gamesPlayed = 0;
-        alert('Iniciando treinamento IA...');
+    async trainAgent(iterations = 100000) {
+    this.isTraining = true;
+    this.gamesPlayed = 0;
+    alert('Iniciando treinamento IA...');
 
-        for (let i = 0; i < iterations; i++) {
-            this.reset();  // Reinicia o tabuleiro a cada nova partida
-            while (this.getAvailableMoves().length > 0 && !this.checkWin(this.player) && !this.checkWin(this.opponent)) {
-                const move = this.chooseMove();
-                this.makeMove(move);
-                this.renderBoard();
-                 alert('b ' + i.toString() + ' ' + this.getAvailableMoves().length.toString());
+    const trainIteration = async (i) => {
+        if (i >= iterations) {
+            this.isTraining = false;
+            alert('Treinamento concluído!');
+            return;
+        }
 
-                if (!this.checkWin(this.player) && this.getAvailableMoves().length > 0) {
-                    this.opponentMove();
-                    this.renderBoard();  // Certifica-se de que o tabuleiro seja atualizado após cada jogada
-                }
-            }
+        this.reset();  // Reinicia o tabuleiro a cada nova partida
 
-            this.gamesPlayed++;
+        while (this.getAvailableMoves().length > 0 && !this.checkWin(this.player) && !this.checkWin(this.opponent)) {
+            const move = this.chooseMove();
+            this.makeMove(move);
+            this.renderBoard();
 
-            // Atualiza a barra de progresso
-            if (i % 100 === 0 || i === iterations - 1) {
-                const progress = (this.gamesPlayed / iterations) * 100;
-                const progressBar = document.getElementById('progress-bar');
-                progressBar.style.width = `${progress}%`;
-                progressBar.innerText = `${this.gamesPlayed} (${progress.toFixed(2)}%)`;
-                await new Promise(resolve => setTimeout(resolve, 0));  // Permite que o DOM seja atualizado
+            if (!this.checkWin(this.player) && this.getAvailableMoves().length > 0) {
+                this.opponentMove();
+                this.renderBoard();  // Certifica-se de que o tabuleiro seja atualizado após cada jogada
             }
         }
+
+        this.gamesPlayed++;
+
+        // Atualiza a barra de progresso
+        if (i % 100 === 0 || i === iterations - 1) {
+            const progress = (this.gamesPlayed / iterations) * 100;
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = `${progress}%`;
+            progressBar.innerText = `${this.gamesPlayed} (${progress.toFixed(2)}%)`;
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 0));  // Permite que o DOM seja atualizado
+
+        trainIteration(i + 1);  // Chama a próxima iteração
+    };
+
+    trainIteration(0);  // Inicia o processo de treinamento
+}
 
         this.isTraining = false;
         alert('Treinamento concluído!');
