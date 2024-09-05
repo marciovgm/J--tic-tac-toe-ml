@@ -25,6 +25,7 @@ class QLearningTicTacToe {
     chooseMove() {
         if (Math.random() < this.explorationRate) {
             const availableMoves = this.getAvailableMoves();
+            alert('passei aqui');
             return availableMoves[Math.floor(Math.random() * availableMoves.length)];
         } else {
             const state = this.getBoardState();
