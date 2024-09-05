@@ -58,13 +58,13 @@ class QLearningTicTacToe {
             // Verifica se o jogador atual venceu
             if (this.checkWin(player)) {
                 if (!this.isTraining) alert(`${player} venceu!`);
-                this.updateQTable(player === this.player ? 10 : -10); // Recompensa ou penalidade
+                this.updateQTable(player === this.player ? 0 : -10); // Recompensa ou penalidade
                 this.reset();
                 return true; // Indica que o jogo terminou
             } else if (this.getAvailableMoves().length === 0) {
                 // Verifica se deu empate
                 if (!this.isTraining) alert('Empate!');
-                this.updateQTable(0); // Recompensa neutra para empate
+                this.updateQTable(10); // Recompensa neutra para empate
                 this.reset();
                 return true; // Indica que o jogo terminou
             }
@@ -99,7 +99,7 @@ class QLearningTicTacToe {
     }
 
     // Treina a IA simulando várias partidas
-    async trainAgent(iterations = 10000000) {
+    async trainAgent(iterations = 10000) {
         this.isTraining = true;
         this.gamesPlayed = 0;
         this.explorationRate = 0.1; // Alta taxa de exploração durante o treinamento
