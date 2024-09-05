@@ -1,20 +1,22 @@
 class QLearningTicTacToe {
     constructor() {
-        this.qTable = {};
+        this.qTable = {}; // Tabela Q para armazenar valores Q
         this.learningRate = 0.1;
         this.discountFactor = 0.9;
         this.explorationRate = 0.1;
-        this.board = Array(9).fill(null);
-        this.player = 'X';
-        this.opponent = 'O';
+        this.board = Array(9).fill(null); // Estado inicial do tabuleiro
+        this.player = 'X'; // Representa o jogador humano
+        this.opponent = 'O'; // Representa a IA
         this.isTraining = false;
-        this.gamesPlayed = 0;
+        this.gamesPlayed = 0; // Contador de jogos jogados durante o treinamento
     }
 
+    // Retorna o estado atual do tabuleiro como uma string
     getBoardState() {
         return this.board.join('');
     }
 
+    // Retorna uma lista de índices de células disponíveis
     getAvailableMoves() {
         return this.board.reduce((acc, cell, index) => {
             if (cell === null) acc.push(index);
@@ -22,6 +24,7 @@ class QLearningTicTacToe {
         }, []);
     }
 
+    // Escolhe o próximo movimento com base na política de exploração/explicação
     chooseMove() {
         if (Math.random() < this.explorationRate) {
             const availableMoves = this.getAvailableMoves();
@@ -35,6 +38,7 @@ class QLearningTicTacToe {
         }
     }
 
+    // Atualiza a Tabela Q com a recompensa recebida
     updateQTable(reward) {
         const state = this.getBoardState();
         if (!this.qTable[state]) this.qTable[state] = Array(9).fill(0);
@@ -44,40 +48,16 @@ class QLearningTicTacToe {
         this.qTable[state][move] += this.learningRate * (reward + this.discountFactor * maxNextQ - this.qTable[state][move]);
     }
 
-    makeMove(index) {
+    // Executa o movimento para o jogador humano ou IA
+    makeMove(index, player) {
         if (this.board[index] === null) {
-            this.board[index] = this.isTraining ? this.opponent : this.player;
+            this.board[index] = player;
             this.lastMove = index;
             this.renderBoard();
-            if (this.checkWin(this.player)) {
-                this.updateQTable(1);
-                if (!this.isTraining) alert('Você ganhou!');
-                this.reset();
-            } else if (this.getAvailableMoves().length === 0) {
-                this.updateQTable(0.5);
-                if (!this.isTraining) alert('Empate!');
-                this.reset();
-            } else if (!this.isTraining) {
-                this.opponentMove();
-            }
         }
     }
 
-    opponentMove() {
-        const opponentMove = this.chooseMove();
-        this.board[opponentMove] = this.opponent;
-        this.renderBoard();
-        if (this.checkWin(this.opponent)) {
-            this.updateQTable(-1);
-            if (!this.isTraining) alert('Oponente ganhou!');
-            this.reset();
-        } else if (this.getAvailableMoves().length === 0) {
-            this.updateQTable(0.5);
-            if (!this.isTraining) alert('Empate!');
-            this.reset();
-        }
-    }
-
+    // Verifica se há um vencedor
     checkWin(player) {
         const winConditions = [
             [0, 1, 2], [3, 4, 5], [6, 7, 8],
@@ -87,11 +67,13 @@ class QLearningTicTacToe {
         return winConditions.some(condition => condition.every(index => this.board[index] === player));
     }
 
+    // Reinicia o tabuleiro
     reset() {
         this.board.fill(null);
         this.renderBoard();
     }
 
+    // Reinicia o aprendizado, limpando a Tabela Q e o contador de jogos
     resetLearning() {
         this.qTable = {};
         this.gamesPlayed = 0;
@@ -100,54 +82,64 @@ class QLearningTicTacToe {
         progressBar.innerText = `0 (0%)`;
     }
 
+    // Treina a IA simulando várias partidas
     async trainAgent(iterations = 10) {
-    this.isTraining = true;
-    this.gamesPlayed = 0;
-    alert('Iniciando treinamento IA 2...');
+        this.isTraining = true;
+        this.gamesPlayed = 0;
+        alert('Iniciando treinamento IA...');
 
-    const trainIteration = async (i) => {
-        if (i >= iterations) {
-            this.isTraining = false;
-            alert('Treinamento concluído!');
-            return;
-        }
+        for (let i = 0; i < iterations; i++) {
+            this.reset();  // Reinicia o tabuleiro a cada nova partida
 
-        this.reset();  // Reinicia o tabuleiro a cada nova partida
+            while (this.getAvailableMoves().length > 0) {
+                const opponentMove = this.chooseMove(); // IA joga primeiro
+                this.makeMove(opponentMove, this.opponent);
 
-        while (this.getAvailableMoves().length > 0 && !this.checkWin(this.player) && !this.checkWin(this.opponent)) {
-            const move = this.chooseMove();
-            this.makeMove(move);
-            this.renderBoard();
-             alert('b ' + i.toString() + ' ' + this.getAvailableMoves().length.toString());
+                if (this.checkWin(this.opponent)) {
+                    this.updateQTable(-1);
+                    break;
+                }
 
-            if (!this.checkWin(this.player) && this.getAvailableMoves().length > 0) {
-                this.opponentMove();
-                this.renderBoard();  // Certifica-se de que o tabuleiro seja atualizado após cada jogada
+                if (this.getAvailableMoves().length === 0) {
+                    this.updateQTable(0.5);
+                    break;  // Empate
+                }
+
+                const playerMove = this.chooseMove(); // Jogada do jogador
+                this.makeMove(playerMove, this.player);
+
+                if (this.checkWin(this.player)) {
+                    this.updateQTable(1);
+                    break;
+                }
+
+                if (this.getAvailableMoves().length === 0) {
+                    this.updateQTable(0.5);
+                    break;  // Empate
+                }
+
+                alert('b ' + i.toString() + ' ' + this.getAvailableMoves().length.toString());
+            }
+
+            this.gamesPlayed++;
+             
+
+            // Atualiza a barra de progresso
+            if (i % 100 === 0 || i === iterations - 1) {
+                const progress = (this.gamesPlayed / iterations) * 100;
+                const progressBar = document.getElementById('progress-bar');
+                progressBar.style.width = `${progress}%`;
+                progressBar.innerText = `${this.gamesPlayed} (${progress.toFixed(2)}%)`;
+
+                await new Promise(resolve => setTimeout(resolve, 0));  // Dá tempo para a atualização do DOM
             }
         }
-
-        this.gamesPlayed++;
-
-        // Atualiza a barra de progresso
-        if (i % 100 === 0 || i === iterations - 1) {
-            const progress = (this.gamesPlayed / iterations) * 100;
-            const progressBar = document.getElementById('progress-bar');
-            progressBar.style.width = `${progress}%`;
-            progressBar.innerText = `${this.gamesPlayed} (${progress.toFixed(2)}%)`;
-        }
-
-        await new Promise(resolve => setTimeout(resolve, 0));  // Permite que o DOM seja atualizado
-
-        trainIteration(i + 1);  // Chama a próxima iteração
-    };
-
-    trainIteration(0);  // Inicia o processo de treinamento
-}
 
         this.isTraining = false;
         alert('Treinamento concluído!');
     }
 
+    // Renderiza o tabuleiro no DOM
     renderBoard() {
         const boardElement = document.getElementById('board');
         boardElement.innerHTML = '';
@@ -156,16 +148,18 @@ class QLearningTicTacToe {
             cellElement.className = 'cell';
             cellElement.setAttribute('data-content', cell || '');
             if (!this.isTraining && cell === null) {
-                cellElement.addEventListener('click', () => this.makeMove(index));
+                cellElement.addEventListener('click', () => this.makeMove(index, this.player));
             }
             boardElement.appendChild(cellElement);
         });
     }
 }
 
+// Inicializa o jogo
 const game = new QLearningTicTacToe();
 game.renderBoard();
 
+// Funções para controle dos botões
 function resetGame() {
     if (!game.isTraining) {
         game.reset();
