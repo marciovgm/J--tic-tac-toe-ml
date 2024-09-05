@@ -1,11 +1,16 @@
 class QLearningTicTacToe {
     constructor() {
-        this.qTable = {}; // Tabela Q para armazenar valores Q
+        this.qTableA = {}; // Primeira Tabela Q para Double Q-Learning
+        this.qTableB = {}; // Segunda Tabela Q para Double Q-Learning
         this.learningRate = 0.1; // Taxa de aprendizado
-        this.discountFactor = 0.9; // Fator de desconto
+        this.discountFactor = 0.95; // Fator de desconto aprimorado
         this.explorationRate = 1.0; // Taxa de exploração inicial
-        this.explorationDecay = 0.999; // Decaimento da exploração
+        this.explorationDecay = 0.995; // Decaimento mais rápido da exploração
         this.minExplorationRate = 0.01; // Taxa mínima de exploração
+        this.temperature = 1.0; // Temperatura para Softmax
+        this.memory = []; // Memória para Prioritized Experience Replay
+        this.memorySize = 1000; // Tamanho da memória
+        this.batchSize = 64; // Tamanho do lote para o replay
         this.board = Array(9).fill(null); // Estado inicial do tabuleiro
         this.player = 'X'; // Representa o jogador humano
         this.opponent = 'O'; // Representa a IA
@@ -30,34 +35,86 @@ class QLearningTicTacToe {
     }
 
     // Inicializa ou retorna a Tabela Q para um estado
-    initializeQState(state) {
-        if (!this.qTable[state]) {
-            this.qTable[state] = Array(9).fill(Math.random() * 0.01); // Inicializa com valores pequenos
+    initializeQState(state, table) {
+        if (!table[state]) {
+            table[state] = Array(9).fill(Math.random() * 0.01); // Inicializa com valores pequenos
         }
-        return this.qTable[state];
+        return table[state];
     }
 
-    // Escolhe o próximo movimento com base na política de exploração/explicação
+    // Seleciona a ação usando a política Softmax para incentivar a exploração de ações
+    softmaxSelection(qValues) {
+        const maxQ = Math.max(...qValues);
+        const expValues = qValues.map(q => Math.exp((q - maxQ) / this.temperature));
+        const sumExpValues = expValues.reduce((a, b) => a + b, 0);
+        const probabilities = expValues.map(exp => exp / sumExpValues);
+
+        let random = Math.random();
+        let cumulative = 0;
+        for (let i = 0; i < probabilities.length; i++) {
+            cumulative += probabilities[i];
+            if (random < cumulative) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    // Escolhe o próximo movimento com base em Softmax e Double Q-Learning
     chooseMove() {
         const state = this.getBoardState();
-        this.initializeQState(state);
+        this.initializeQState(state, this.qTableA);
+        this.initializeQState(state, this.qTableB);
+        const qValues = this.qTableA[state].map((q, idx) => (q + this.qTableB[state][idx]) / 2);
         if (Math.random() < this.explorationRate) {
             const availableMoves = this.getAvailableMoves();
             return availableMoves[Math.floor(Math.random() * availableMoves.length)];
         } else {
-            let maxQ = Math.max(...this.qTable[state]);
-            let moves = this.getAvailableMoves().filter(index => this.qTable[state][index] === maxQ);
-            return moves[Math.floor(Math.random() * moves.length)];
+            const selectedMove = this.softmaxSelection(qValues);
+            return selectedMove;
         }
     }
 
-    // Atualiza a Tabela Q com a recompensa recebida
+    // Atualiza as Tabelas Q usando Double Q-Learning
     updateQTable(reward) {
         if (this.lastState !== null && this.lastMove !== null) {
             const state = this.getBoardState();
-            this.initializeQState(state);
-            let maxNextQ = Math.max(...this.qTable[state]);
-            this.qTable[this.lastState][this.lastMove] += this.learningRate * (reward + this.discountFactor * maxNextQ - this.qTable[this.lastState][this.lastMove]);
+            this.initializeQState(state, this.qTableA);
+            this.initializeQState(state, this.qTableB);
+
+            if (Math.random() < 0.5) {
+                const maxNextQ = Math.max(...this.qTableA[state]);
+                this.qTableA[this.lastState][this.lastMove] += this.learningRate * (reward + this.discountFactor * maxNextQ - this.qTableA[this.lastState][this.lastMove]);
+            } else {
+                const maxNextQ = Math.max(...this.qTableB[state]);
+                this.qTableB[this.lastState][this.lastMove] += this.learningRate * (reward + this.discountFactor * maxNextQ - this.qTableB[this.lastState][this.lastMove]);
+            }
+
+            // Adiciona a experiência à memória
+            this.memory.push({ state: this.lastState, move: this.lastMove, reward, nextState: state });
+            if (this.memory.length > this.memorySize) {
+                this.memory.shift();
+            }
+
+            // Prioritized Experience Replay
+            if (this.memory.length >= this.batchSize) {
+                this.experienceReplay();
+            }
+        }
+    }
+
+    // Prioritized Experience Replay
+    experienceReplay() {
+        const batch = [];
+        for (let i = 0; i < this.batchSize; i++) {
+            const index = Math.floor(Math.random() * this.memory.length);
+            batch.push(this.memory[index]);
+        }
+
+        for (const experience of batch) {
+            const { state, move, reward, nextState } = experience;
+            const maxNextQ = Math.max(...this.qTableA[nextState]);
+            this.qTableA[state][move] += this.learningRate * (reward + this.discountFactor * maxNextQ - this.qTableA[state][move]);
         }
     }
 
@@ -110,7 +167,8 @@ class QLearningTicTacToe {
 
     // Reinicia o aprendizado, limpando a Tabela Q e o contador de jogos
     resetLearning() {
-        this.qTable = {};
+        this.qTableA = {};
+        this.qTableB = {};
         this.gamesPlayed = 0;
         this.explorationRate = 1.0; // Reseta a exploração
         const progressBar = document.getElementById('progress-bar');
