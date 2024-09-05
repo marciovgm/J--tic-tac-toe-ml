@@ -100,10 +100,11 @@ class QLearningTicTacToe {
         const progressBar = document.getElementById('progress-bar');
         progressBar.style.width = '0%';
         progressBar.innerText = `0 (0%)`;
+        this.reset(); // Reseta o tabuleiro também ao zerar o aprendizado
     }
 
     // Treina a IA simulando várias partidas, sempre assumindo que o humano joga primeiro
-    async trainAgent(iterations = 110000) {
+    async trainAgent(iterations = 100000) {
         this.isTraining = true;
         this.gamesPlayed = 0;
         this.explorationRate = 0.2; // Alta taxa de exploração durante o treinamento
@@ -138,6 +139,7 @@ class QLearningTicTacToe {
         this.explorationRate = 0.01; // Reduz a taxa de exploração após o treinamento
         this.isTraining = false;
         alert('Treinamento concluído!');
+        this.reset(); // Reinicia o tabuleiro para começar o jogo após o treinamento
     }
 
     // Renderiza o tabuleiro no DOM
@@ -151,8 +153,10 @@ class QLearningTicTacToe {
             if (!this.isTraining && cell === null) {
                 cellElement.addEventListener('click', () => {
                     if (!this.makeMove(index, this.player)) {
-                        const opponentMove = this.chooseMove();
-                        this.makeMove(opponentMove, this.opponent);
+                        setTimeout(() => {
+                            const opponentMove = this.chooseMove();
+                            this.makeMove(opponentMove, this.opponent);
+                        }, 100); // Pequeno atraso para garantir que a jogada do X termine antes do O jogar
                     }
                 });
             }
