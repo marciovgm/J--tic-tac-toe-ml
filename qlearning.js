@@ -11,17 +11,24 @@ class QLearningTicTacToe {
         this.gamesPlayed = 0;
     }
 
+    // Retorna uma string representando o estado atual do tabuleiro
     getBoardState() {
         return this.board.join('');
     }
 
+    // Retorna um array com os índices dos movimentos disponíveis no tabuleiro
     getAvailableMoves() {
-        return this.board.map((cell, index) => cell === null ? index : null).filter(val => val !== null);
+        return this.board.reduce((acc, cell, index) => {
+            if (cell === null) acc.push(index);
+            return acc;
+        }, []);
     }
 
+    // Escolhe um movimento baseado na exploração/explicação
     chooseMove() {
         if (Math.random() < this.explorationRate) {
-            return this.getAvailableMoves()[Math.floor(Math.random() * this.getAvailableMoves().length)];
+            const availableMoves = this.getAvailableMoves();
+            return availableMoves[Math.floor(Math.random() * availableMoves.length)];
         } else {
             const state = this.getBoardState();
             if (!this.qTable[state]) this.qTable[state] = Array(9).fill(0);
@@ -31,6 +38,7 @@ class QLearningTicTacToe {
         }
     }
 
+    // Atualiza a Q-Table com o valor de recompensa
     updateQTable(reward) {
         const state = this.getBoardState();
         if (!this.qTable[state]) this.qTable[state] = Array(9).fill(0);
@@ -40,6 +48,7 @@ class QLearningTicTacToe {
         this.qTable[state][move] += this.learningRate * (reward + this.discountFactor * maxNextQ - this.qTable[state][move]);
     }
 
+    // Executa um movimento no tabuleiro e verifica se o jogo terminou
     makeMove(index) {
         if (this.board[index] === null && !this.isTraining) {
             this.board[index] = this.player;
@@ -59,6 +68,7 @@ class QLearningTicTacToe {
         }
     }
 
+    // Movimento do oponente IA
     opponentMove() {
         const opponentMove = this.chooseMove();
         this.board[opponentMove] = this.opponent;
@@ -67,9 +77,15 @@ class QLearningTicTacToe {
             this.updateQTable(-1);
             if (!this.isTraining) alert('Oponente ganhou!');
             this.reset();
+        } else if (this.getAvailableMoves().length === 0) {
+            // Verifica se não há mais movimentos disponíveis (empate)
+            this.updateQTable(0.5);
+            if (!this.isTraining) alert('Empate!');
+            this.reset();
         }
     }
 
+    // Verifica se há um vencedor
     checkWin(player) {
         const winConditions = [
             [0, 1, 2], [3, 4, 5], [6, 7, 8],
@@ -79,11 +95,13 @@ class QLearningTicTacToe {
         return winConditions.some(condition => condition.every(index => this.board[index] === player));
     }
 
+    // Reseta o tabuleiro
     reset() {
         this.board.fill(null);
         this.renderBoard();
     }
 
+    // Reseta o aprendizado (Q-Table e contador de partidas)
     resetLearning() {
         this.qTable = {};
         this.gamesPlayed = 0;
@@ -92,29 +110,22 @@ class QLearningTicTacToe {
         progressBar.innerText = `0 (0%)`;
     }
 
-    async trainAgent(iterations = 10) {
+    // Treina o agente simulando partidas
+    async trainAgent(iterations = 100000) {
         this.isTraining = true;
         this.gamesPlayed = 0;
-        let i = 0;
-        
         alert('Iniciando treinamento...');
-        alert(iterations);
-        while (i < iterations) {
+
+        for (let i = 0; i < iterations; i++) {
             this.reset();
-            alert('dentro');
-            //alert('teste' + this.getAvailableMoves().length.toString());
             while (this.getAvailableMoves().length > 0 && !this.checkWin(this.player) && !this.checkWin(this.opponent)) {
-                alert('dentro 2' + ' ' + this.getAvailableMoves().length.toString());
                 this.makeMove(this.chooseMove());
                 if (!this.checkWin(this.player) && this.getAvailableMoves().length > 0) {
                     this.opponentMove();
                 }
-                
             }
 
             this.gamesPlayed++;
-            i++;
-            alert(gamesPlayed.toString());
 
             if (i % 100 === 0 || i === iterations - 1) {
                 const progress = (this.gamesPlayed / iterations) * 100;
@@ -129,6 +140,7 @@ class QLearningTicTacToe {
         alert('Treinamento concluído!');
     }
 
+    // Renderiza o tabuleiro no DOM
     renderBoard() {
         const boardElement = document.getElementById('board');
         boardElement.innerHTML = '';
@@ -147,6 +159,7 @@ class QLearningTicTacToe {
 const game = new QLearningTicTacToe();
 game.renderBoard();
 
+// Funções para controle dos botões
 function resetGame() {
     if (!game.isTraining) {
         game.reset();
