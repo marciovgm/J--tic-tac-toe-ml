@@ -11,6 +11,7 @@ class QLearningTicTacToe {
         this.gamesPlayed = 0; // Contador de jogos jogados durante o treinamento
         this.lastState = null; // Armazena o estado anterior
         this.lastMove = null; // Armazena a última jogada
+        this.currentPlayer = this.player; // Define o jogador atual como 'X'
     }
 
     // Retorna o estado atual do tabuleiro como uma string
@@ -57,22 +58,23 @@ class QLearningTicTacToe {
             this.lastMove = index;
             this.renderBoard();
 
-            // Verifica se o jogador atual venceu
             if (this.checkWin(player)) {
                 if (!this.isTraining) alert(`${player} venceu!`);
-                this.updateQTable(player === this.player ? 1 : -1); // Recompensa ou penalidade
+                this.updateQTable(player === this.player ? 1 : -1);
                 this.reset();
-                return true; // Indica que o jogo terminou
+                return true;
             } else if (this.getAvailableMoves().length === 0) {
-                // Verifica se deu empate
                 if (!this.isTraining) alert('Empate!');
-                this.updateQTable(0.5); // Recompensa neutra para empate
+                this.updateQTable(0.5);
                 this.reset();
-                return true; // Indica que o jogo terminou
+                return true;
             }
-            return false; // O jogo continua
+
+            // Alterna o turno para o próximo jogador
+            this.currentPlayer = this.currentPlayer === this.player ? this.opponent : this.player;
+            return false;
         }
-        return true; // Jogada inválida, tratada como finalizada para impedir que o jogador jogue duas vezes
+        return true; // Jogada inválida
     }
 
     // Verifica se há um vencedor
@@ -90,6 +92,7 @@ class QLearningTicTacToe {
         this.board.fill(null);
         this.lastState = null;
         this.lastMove = null;
+        this.currentPlayer = this.player; // Reseta o turno para começar com o jogador 'X'
         this.renderBoard();
     }
 
@@ -104,7 +107,7 @@ class QLearningTicTacToe {
     }
 
     // Treina a IA simulando várias partidas, sempre assumindo que o humano joga primeiro
-    async trainAgent(iterations = 110000) {
+    async trainAgent(iterations = 100000) {
         this.isTraining = true;
         this.gamesPlayed = 0;
         this.explorationRate = 0.2; // Alta taxa de exploração durante o treinamento
@@ -114,11 +117,9 @@ class QLearningTicTacToe {
             this.reset(); // Reinicia o tabuleiro a cada nova partida
 
             while (this.getAvailableMoves().length > 0) {
-                // Simula a jogada do humano (IA precisa responder a isso)
                 const playerMove = this.chooseMove(); 
                 if (this.makeMove(playerMove, this.player)) break;
 
-                // IA responde
                 const opponentMove = this.chooseMove();
                 if (this.makeMove(opponentMove, this.opponent)) break;
             }
@@ -152,11 +153,13 @@ class QLearningTicTacToe {
             cellElement.setAttribute('data-content', cell || '');
             if (!this.isTraining && cell === null) {
                 cellElement.addEventListener('click', () => {
-                    if (!this.makeMove(index, this.player)) {
+                    if (this.currentPlayer === this.player && !this.makeMove(index, this.player)) {
                         setTimeout(() => {
-                            const opponentMove = this.chooseMove();
-                            this.makeMove(opponentMove, this.opponent);
-                        }, 100); // Pequeno atraso para garantir que a jogada do X termine antes do O jogar
+                            if (this.currentPlayer === this.opponent) {
+                                const opponentMove = this.chooseMove();
+                                this.makeMove(opponentMove, this.opponent);
+                            }
+                        }, 100);
                     }
                 });
             }
