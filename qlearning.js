@@ -58,13 +58,13 @@ class QLearningTicTacToe {
             // Verifica se o jogador atual venceu
             if (this.checkWin(player)) {
                 if (!this.isTraining) alert(`${player} venceu!`);
-                this.updateQTable(player === this.player ? 5 : -5); // Recompensa ou penalidade
+                this.updateQTable(player === this.player ? 1 : -1); // Recompensa ou penalidade
                 this.reset();
                 return true; // Indica que o jogo terminou
             } else if (this.getAvailableMoves().length === 0) {
                 // Verifica se deu empate
                 if (!this.isTraining) alert('Empate!');
-                this.updateQTable(0); // Recompensa neutra para empate
+                this.updateQTable(0.5); // Recompensa neutra para empate
                 this.reset();
                 return true; // Indica que o jogo terminou
             }
@@ -168,3 +168,11 @@ function resetGame() {
 
 function resetLearning() {
     if (!game.isTraining) {
+        game.resetLearning();
+        alert('Aprendizado zerado!');
+    }
+}
+
+function trainAgent() {
+    game.trainAgent();
+}
