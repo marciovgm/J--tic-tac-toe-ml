@@ -102,8 +102,8 @@ class QLearningTicTacToe {
         progressBar.innerText = `0 (0%)`;
     }
 
-    // Treina a IA simulando várias partidas
-    async trainAgent(iterations = 100000) {
+    // Treina a IA simulando várias partidas, sempre assumindo que o humano joga primeiro
+    async trainAgent(iterations = 110000) {
         this.isTraining = true;
         this.gamesPlayed = 0;
         this.explorationRate = 0.2; // Alta taxa de exploração durante o treinamento
@@ -112,21 +112,14 @@ class QLearningTicTacToe {
         for (let i = 0; i < iterations; i++) {
             this.reset(); // Reinicia o tabuleiro a cada nova partida
 
-            let isPlayerFirst = Math.random() < 0.5; // Decida aleatoriamente quem começa
-
             while (this.getAvailableMoves().length > 0) {
-                if (isPlayerFirst) {
-                    const playerMove = this.chooseMove(); // Simula a jogada do jogador
-                    if (this.makeMove(playerMove, this.player)) break;
-                }
+                // Simula a jogada do humano (IA precisa responder a isso)
+                const playerMove = this.chooseMove(); 
+                if (this.makeMove(playerMove, this.player)) break;
 
-                const opponentMove = this.chooseMove(); // IA joga
+                // IA responde
+                const opponentMove = this.chooseMove();
                 if (this.makeMove(opponentMove, this.opponent)) break;
-
-                if (!isPlayerFirst) {
-                    const playerMove = this.chooseMove(); // Simula a jogada do jogador
-                    if (this.makeMove(playerMove, this.player)) break;
-                }
             }
 
             this.gamesPlayed++;
