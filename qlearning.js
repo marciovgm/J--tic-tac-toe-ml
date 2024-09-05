@@ -1,8 +1,8 @@
 class QLearningTicTacToe {
     constructor() {
         this.qTable = {}; // Tabela Q para armazenar valores Q
-        this.learningRate = 0.1;
-        this.discountFactor = 0.9;
+        this.learningRate = 0.1; // Taxa de aprendizado
+        this.discountFactor = 0.9; // Fator de desconto
         this.explorationRate = 0.1; // Taxa de exploração inicial
         this.board = Array(9).fill(null); // Estado inicial do tabuleiro
         this.player = 'X'; // Representa o jogador humano
@@ -58,7 +58,7 @@ class QLearningTicTacToe {
             // Verifica se o jogador atual venceu
             if (this.checkWin(player)) {
                 if (!this.isTraining) alert(`${player} venceu!`);
-                this.updateQTable(player === this.player ? -5 : 5); // Recompensa ou penalidade
+                this.updateQTable(player === this.player ? 5 : -5); // Recompensa ou penalidade
                 this.reset();
                 return true; // Indica que o jogo terminou
             } else if (this.getAvailableMoves().length === 0) {
@@ -99,7 +99,7 @@ class QLearningTicTacToe {
     }
 
     // Treina a IA simulando várias partidas
-    async trainAgent(iterations = 50000) {
+    async trainAgent(iterations = 100000) {
         this.isTraining = true;
         this.gamesPlayed = 0;
         this.explorationRate = 0.1; // Alta taxa de exploração durante o treinamento
@@ -129,7 +129,7 @@ class QLearningTicTacToe {
             }
         }
 
-        this.explorationRate = 0.001; // Reduz a taxa de exploração após o treinamento
+        this.explorationRate = 0.01; // Reduz a taxa de exploração após o treinamento
         this.isTraining = false;
         alert('Treinamento concluído!');
     }
@@ -168,11 +168,3 @@ function resetGame() {
 
 function resetLearning() {
     if (!game.isTraining) {
-        game.resetLearning();
-        alert('Aprendizado zerado!');
-    }
-}
-
-function trainAgent() {
-    game.trainAgent();
-}
