@@ -103,6 +103,7 @@ class QLearningTicTacToe {
             this.reset();
             alert('dentro');
             while (this.getAvailableMoves().length > 0 && !this.checkWin(this.player) && !this.checkWin(this.opponent)) {
+                alert('dentro 2');
                 this.makeMove(this.chooseMove());
                 if (!this.checkWin(this.player) && this.getAvailableMoves().length > 0) {
                     this.opponentMove();
