@@ -58,7 +58,7 @@ class QLearningTicTacToe {
             // Verifica se o jogador atual venceu
             if (this.checkWin(player)) {
                 if (!this.isTraining) alert(`${player} venceu!`);
-                this.updateQTable(player === this.player ? -1 : 2); // Recompensa ou penalidade
+                this.updateQTable(player === this.player ? 5 : -1); // Recompensa ou penalidade
                 this.reset();
                 return true; // Indica que o jogo terminou
             } else if (this.getAvailableMoves().length === 0) {
