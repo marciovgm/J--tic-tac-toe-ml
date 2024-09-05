@@ -59,16 +59,16 @@ class QLearningTicTacToe {
             if (this.checkWin(player)) {
                 if (!this.isTraining) alert(`${player} venceu!`);
                 this.reset();
+                return true; // Indica que o jogo terminou
             } else if (this.getAvailableMoves().length === 0) {
                 // Verifica se deu empate
                 if (!this.isTraining) alert('Empate!');
                 this.reset();
-            } else if (player === this.player && !this.isTraining) {
-                // Se o jogador humano jogou, agora é a vez da IA jogar
-                const opponentMove = this.chooseMove();
-                this.makeMove(opponentMove, this.opponent);
+                return true; // Indica que o jogo terminou
             }
+            return false; // O jogo continua
         }
+        return false; // Movimentação inválida
     }
 
     // Verifica se há um vencedor
@@ -103,34 +103,14 @@ class QLearningTicTacToe {
         alert('Iniciando treinamento IA...');
 
         for (let i = 0; i < iterations; i++) {
-            this.reset();  // Reinicia o tabuleiro a cada nova partida
+            this.reset(); // Reinicia o tabuleiro a cada nova partida
 
             while (this.getAvailableMoves().length > 0) {
                 const opponentMove = this.chooseMove(); // IA joga primeiro
-                this.makeMove(opponentMove, this.opponent);
+                if (this.makeMove(opponentMove, this.opponent)) break;
 
-                if (this.checkWin(this.opponent)) {
-                    this.updateQTable(-1);
-                    break;
-                }
-
-                if (this.getAvailableMoves().length === 0) {
-                    this.updateQTable(0.5);
-                    break;  // Empate
-                }
-
-                const playerMove = this.chooseMove(); // Jogada do jogador
-                this.makeMove(playerMove, this.player);
-
-                if (this.checkWin(this.player)) {
-                    this.updateQTable(1);
-                    break;
-                }
-
-                if (this.getAvailableMoves().length === 0) {
-                    this.updateQTable(0.5);
-                    break;  // Empate
-                }
+                const playerMove = this.chooseMove(); // Simula a jogada do jogador
+                if (this.makeMove(playerMove, this.player)) break;
             }
 
             this.gamesPlayed++;
@@ -142,7 +122,7 @@ class QLearningTicTacToe {
                 progressBar.style.width = `${progress}%`;
                 progressBar.innerText = `${this.gamesPlayed} (${progress.toFixed(2)}%)`;
 
-                await new Promise(resolve => setTimeout(resolve, 0));  // Dá tempo para a atualização do DOM
+                await new Promise(resolve => setTimeout(resolve, 0)); // Dá tempo para a atualização do DOM
             }
         }
 
@@ -159,7 +139,12 @@ class QLearningTicTacToe {
             cellElement.className = 'cell';
             cellElement.setAttribute('data-content', cell || '');
             if (!this.isTraining && cell === null) {
-                cellElement.addEventListener('click', () => this.makeMove(index, this.player));
+                cellElement.addEventListener('click', () => {
+                    if (!this.makeMove(index, this.player)) {
+                        const opponentMove = this.chooseMove();
+                        this.makeMove(opponentMove, this.opponent);
+                    }
+                });
             }
             boardElement.appendChild(cellElement);
         });
