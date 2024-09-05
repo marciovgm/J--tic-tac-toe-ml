@@ -100,7 +100,7 @@ class QLearningTicTacToe {
     async trainAgent(iterations = 1000) {
         this.isTraining = true;
         this.gamesPlayed = 0;
-        alert('Iniciando treinamento IA...');
+        alert('Iniciando treinamento IA 2...');
 
         for (let i = 0; i < iterations; i++) {
             this.reset(); // Reinicia o tabuleiro a cada nova partida
