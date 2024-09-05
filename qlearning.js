@@ -102,9 +102,9 @@ class QLearningTicTacToe {
         while (i < iterations) {
             this.reset();
             alert('dentro');
-            alert('teste' + this.getAvailableMoves().length.toString());
+            //alert('teste' + this.getAvailableMoves().length.toString());
             while (this.getAvailableMoves().length > 0 && !this.checkWin(this.player) && !this.checkWin(this.opponent)) {
-                alert('dentro 2');
+                alert('dentro 2' + ' ' + this.getAvailableMoves().length);
                 this.makeMove(this.chooseMove());
                 if (!this.checkWin(this.player) && this.getAvailableMoves().length > 0) {
                     this.opponentMove();
