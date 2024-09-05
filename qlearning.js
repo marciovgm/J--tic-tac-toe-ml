@@ -60,12 +60,12 @@ class QLearningTicTacToe {
 
             if (this.checkWin(player)) {
                 if (!this.isTraining) alert(`${player} venceu!`);
-                this.updateQTable(player === this.player ? 1 : -1);
+                this.updateQTable(player === this.player ? 1 : -10);
                 this.reset();
                 return true;
             } else if (this.getAvailableMoves().length === 0) {
                 if (!this.isTraining) alert('Empate!');
-                this.updateQTable(0.5);
+                this.updateQTable(10);
                 this.reset();
                 return true;
             }
