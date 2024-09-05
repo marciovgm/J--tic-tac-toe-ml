@@ -118,7 +118,7 @@ class QLearningTicTacToe {
                     break;  // Empate
                 }
 
-                alert('b ' + i.toString() + ' ' + this.getAvailableMoves().length.toString());
+                //alert('b ' + i.toString() + ' ' + this.getAvailableMoves().length.toString());
             }
 
             this.gamesPlayed++;
