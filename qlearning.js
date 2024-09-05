@@ -5,12 +5,8 @@ class QLearningTicTacToe {
         this.learningRate = 0.1; // Taxa de aprendizado
         this.discountFactor = 0.95; // Fator de desconto aprimorado
         this.explorationRate = 1.0; // Taxa de exploração inicial
-        this.explorationDecay = 0.995; // Decaimento mais rápido da exploração
+        this.explorationDecay = 0.995; // Decaimento da exploração
         this.minExplorationRate = 0.01; // Taxa mínima de exploração
-        this.temperature = 1.0; // Temperatura para Softmax
-        this.memory = []; // Memória para Prioritized Experience Replay
-        this.memorySize = 1000; // Tamanho da memória
-        this.batchSize = 64; // Tamanho do lote para o replay
         this.board = Array(9).fill(null); // Estado inicial do tabuleiro
         this.player = 'X'; // Representa o jogador humano
         this.opponent = 'O'; // Representa a IA
@@ -42,36 +38,20 @@ class QLearningTicTacToe {
         return table[state];
     }
 
-    // Seleciona a ação usando a política Softmax para incentivar a exploração de ações
-    softmaxSelection(qValues) {
-        const maxQ = Math.max(...qValues);
-        const expValues = qValues.map(q => Math.exp((q - maxQ) / this.temperature));
-        const sumExpValues = expValues.reduce((a, b) => a + b, 0);
-        const probabilities = expValues.map(exp => exp / sumExpValues);
-
-        let random = Math.random();
-        let cumulative = 0;
-        for (let i = 0; i < probabilities.length; i++) {
-            cumulative += probabilities[i];
-            if (random < cumulative) {
-                return i;
-            }
-        }
-        return 0;
-    }
-
-    // Escolhe o próximo movimento com base em Softmax e Double Q-Learning
+    // Escolhe o próximo movimento com base em uma política epsilon-greedy
     chooseMove() {
         const state = this.getBoardState();
         this.initializeQState(state, this.qTableA);
         this.initializeQState(state, this.qTableB);
-        const qValues = this.qTableA[state].map((q, idx) => (q + this.qTableB[state][idx]) / 2);
+
         if (Math.random() < this.explorationRate) {
             const availableMoves = this.getAvailableMoves();
             return availableMoves[Math.floor(Math.random() * availableMoves.length)];
         } else {
-            const selectedMove = this.softmaxSelection(qValues);
-            return selectedMove;
+            const qValues = this.qTableA[state].map((q, idx) => (q + this.qTableB[state][idx]) / 2);
+            let maxQ = Math.max(...qValues);
+            let bestMoves = this.getAvailableMoves().filter(index => qValues[index] === maxQ);
+            return bestMoves[Math.floor(Math.random() * bestMoves.length)];
         }
     }
 
@@ -89,32 +69,6 @@ class QLearningTicTacToe {
                 const maxNextQ = Math.max(...this.qTableB[state]);
                 this.qTableB[this.lastState][this.lastMove] += this.learningRate * (reward + this.discountFactor * maxNextQ - this.qTableB[this.lastState][this.lastMove]);
             }
-
-            // Adiciona a experiência à memória
-            this.memory.push({ state: this.lastState, move: this.lastMove, reward, nextState: state });
-            if (this.memory.length > this.memorySize) {
-                this.memory.shift();
-            }
-
-            // Prioritized Experience Replay
-            if (this.memory.length >= this.batchSize) {
-                this.experienceReplay();
-            }
-        }
-    }
-
-    // Prioritized Experience Replay
-    experienceReplay() {
-        const batch = [];
-        for (let i = 0; i < this.batchSize; i++) {
-            const index = Math.floor(Math.random() * this.memory.length);
-            batch.push(this.memory[index]);
-        }
-
-        for (const experience of batch) {
-            const { state, move, reward, nextState } = experience;
-            const maxNextQ = Math.max(...this.qTableA[nextState]);
-            this.qTableA[state][move] += this.learningRate * (reward + this.discountFactor * maxNextQ - this.qTableA[state][move]);
         }
     }
 
@@ -178,7 +132,7 @@ class QLearningTicTacToe {
     }
 
     // Treina a IA simulando várias partidas, sempre assumindo que o humano joga primeiro
-    async trainAgent(iterations = 100000) {
+    async trainAgent(iterations = 10000) {
         this.isTraining = true;
         this.gamesPlayed = 0;
         alert('Iniciando treinamento IA...');
